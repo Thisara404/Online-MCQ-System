@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom styles */
+      .btn {
+        @apply px-4 py-2 rounded-lg font-medium transition-colors;
+      }
+      .btn-primary {
+        @apply bg-blue-600 text-white hover:bg-blue-700;
+      }
+      .btn-secondary {
+        @apply bg-gray-200 text-gray-800 hover:bg-gray-300;
+      }
+      .card {
+        @apply bg-white rounded-lg shadow-md border p-6;
+      }
+      .input {
+        @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/main.jsx"></script>
+  </body>
+</html>
