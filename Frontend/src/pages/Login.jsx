@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { authAPI } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ErrorMessage from "../components/ErrorMessage";
@@ -11,8 +12,9 @@ import {
   FaSignInAlt,
 } from "react-icons/fa";
 
-const Login = ({ setUser }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const Login = ({ setUser, isRegisterMode = false }) => {
+  const location = useLocation();
+  const [isLogin, setIsLogin] = useState(!isRegisterMode);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -23,6 +25,15 @@ const Login = ({ setUser }) => {
     password: "",
     confirmPassword: "",
   });
+
+  // Update login state based on route
+  useEffect(() => {
+    if (location.pathname === '/register') {
+      setIsLogin(false);
+    } else if (location.pathname === '/login') {
+      setIsLogin(true);
+    }
+  }, [location]);
 
   const handleChange = (e) => {
     setFormData({
@@ -252,30 +263,32 @@ const Login = ({ setUser }) => {
             </button>
           </div>
 
-          {/* Demo Credentials */}
-          {/* <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h4 className="text-sm font-medium text-blue-800 mb-2">
-              🚀 Demo Credentials:
-            </h4>
-            <div className="text-xs text-blue-700 space-y-1">
-              <div className="flex justify-between items-center p-2 bg-white rounded border">
-                <span>
-                  <strong>Student:</strong> john@student.com
-                </span>
-                <span className="text-gray-500">student123</span>
+          {/* Demo Credentials - Show only on login mode */}
+          {/* {isLogin && (
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="text-sm font-medium text-blue-800 mb-2">
+                🚀 Demo Credentials:
+              </h4>
+              <div className="text-xs text-blue-700 space-y-1">
+                <div className="flex justify-between items-center p-2 bg-white rounded border">
+                  <span>
+                    <strong>Student:</strong> john@student.com
+                  </span>
+                  <span className="text-gray-500">student123</span>
+                </div>
+                <div className="flex justify-between items-center p-2 bg-white rounded border">
+                  <span>
+                    <strong>Admin:</strong> admin@mcqsystem.com
+                  </span>
+                  <span className="text-gray-500">admin123</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center p-2 bg-white rounded border">
-                <span>
-                  <strong>Admin:</strong> admin@mcqsystem.com
-                </span>
-                <span className="text-gray-500">admin123</span>
-              </div>
+              <p className="text-xs text-blue-600 mt-2">
+                💡 Use these credentials to test the system without creating an
+                account
+              </p>
             </div>
-            <p className="text-xs text-blue-600 mt-2">
-              💡 Use these credentials to test the system without creating an
-              account
-            </p>
-          </div> */}
+          )} */}
         </form>
       </div>
     </div>

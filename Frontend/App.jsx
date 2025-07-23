@@ -75,6 +75,10 @@ function App() {
               element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} />} 
             />
             <Route 
+              path="/register" 
+              element={user ? <Navigate to="/dashboard" /> : <Login setUser={setUser} isRegisterMode={true} />} 
+            />
+            <Route 
               path="/dashboard" 
               element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} 
             />
