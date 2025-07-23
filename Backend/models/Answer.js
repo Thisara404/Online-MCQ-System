@@ -23,12 +23,14 @@ const answerSchema = new mongoose.Schema({
   },
   isCorrect: {
     type: Boolean,
-    required: [true, 'Correct status is required']
+    required: [true, 'Correct status is required'],
+    default: false
   },
   marks: {
     type: Number,
     required: [true, 'Marks is required'],
-    min: [0, 'Marks cannot be negative']
+    min: [0, 'Marks cannot be negative'],
+    default: 0
   },
   timeSpent: {
     type: Number, // in seconds

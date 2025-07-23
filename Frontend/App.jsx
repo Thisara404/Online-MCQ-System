@@ -8,34 +8,53 @@ import Dashboard from './src/pages/Dashboard';
 import TakeExam from './src/pages/TakeExam';
 import Results from './src/pages/Results';
 import Result from './src/pages/Result';
+import AdminDashboard from './src/pages/AdminDashboard';
 import LoadingSpinner from './src/components/LoadingSpinner';
+import { authAPI } from './src/services/api';
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Simple token validation - you can improve this
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.exp * 1000 > Date.now()) {
-          setUser({ 
-            token, 
-            id: payload.id,
-            name: payload.name || 'User',
-            role: payload.role || 'student'
-          });
-        } else {
-          localStorage.removeItem('token');
-        }
-      } catch (error) {
-        localStorage.removeItem('token');
-      }
-    }
-    setLoading(false);
+    validateAndSetUser();
   }, []);
+
+  const validateAndSetUser = async () => {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Use API call to validate token and get fresh user data
+      const response = await authAPI.getProfile();
+      
+      if (response.data.success) {
+        const userData = response.data.data.user;
+        setUser({ 
+          token, 
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role
+        });
+      } else {
+        // Invalid token, remove it
+        localStorage.removeItem('token');
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Token validation failed:', error);
+      // Token is invalid or expired
+      localStorage.removeItem('token');
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -70,6 +89,14 @@ function App() {
             <Route 
               path="/result/:id" 
               element={user ? <Result user={user} /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                user && user.role === 'admin' ? 
+                <AdminDashboard user={user} /> : 
+                <Navigate to="/login" />
+              } 
             />
           </Routes>
         </main>

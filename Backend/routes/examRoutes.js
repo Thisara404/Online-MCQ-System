@@ -5,7 +5,8 @@ const {
   getExamQuestions,
   createExam,
   updateExam,
-  deleteExam
+  deleteExam,
+  getAllExamsAdmin
 } = require('../controllers/examController');
 const { auth, adminAuth, optionalAuth } = require('../middleware/auth');
 
@@ -19,6 +20,7 @@ router.get('/:id', getExamById);
 router.get('/:id/questions', auth, getExamQuestions);
 
 // Admin only routes
+router.get('/admin/all', auth, adminAuth, getAllExamsAdmin); // New admin route
 router.post('/', auth, adminAuth, createExam);
 router.put('/:id', auth, adminAuth, updateExam);
 router.delete('/:id', auth, adminAuth, deleteExam);

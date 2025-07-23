@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaUser, FaSignOutAlt, FaHome, FaTachometerAlt, FaClipboardList } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaHome, FaTachometerAlt, FaClipboardList, FaCrown } from 'react-icons/fa';
 
 const Navbar = ({ user, onLogout }) => {
   const navigate = useNavigate();
@@ -52,15 +52,34 @@ const Navbar = ({ user, onLogout }) => {
                   <span>My Results</span>
                 </Link>
 
+                {/* Admin Link */}
+                {user.role === 'admin' && (
+                  <Link 
+                    to="/admin" 
+                    className="flex items-center space-x-1 text-purple-600 hover:text-purple-700 transition-colors"
+                  >
+                    <FaCrown />
+                    <span>Admin</span>
+                  </Link>
+                )}
+
                 {/* User Menu */}
                 <div className="flex items-center space-x-4 border-l pl-6 ml-4">
                   <div className="flex items-center space-x-2">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <FaUser className="text-blue-600 text-sm" />
+                    <div className={`p-2 rounded-full ${
+                      user.role === 'admin' ? 'bg-purple-100' : 'bg-blue-100'
+                    }`}>
+                      <FaUser className={`text-sm ${
+                        user.role === 'admin' ? 'text-purple-600' : 'text-blue-600'
+                      }`} />
                     </div>
                     <div className="text-sm">
                       <div className="text-gray-800 font-medium">{user.name}</div>
-                      <div className="text-gray-500 text-xs">{user.role}</div>
+                      <div className={`text-xs ${
+                        user.role === 'admin' ? 'text-purple-600' : 'text-gray-500'
+                      }`}>
+                        {user.role === 'admin' ? '👑 Admin' : 'Student'}
+                      </div>
                     </div>
                   </div>
                   

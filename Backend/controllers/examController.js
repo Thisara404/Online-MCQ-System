@@ -3,7 +3,7 @@ const Question = require('../models/Question');
 const Result = require('../models/Result');
 const mongoose = require('mongoose');
 
-// @desc    Get all active exams
+// @desc    Get all active exams (Public)
 // @route   GET /api/exams
 // @access  Public
 const getAllExams = async (req, res) => {
@@ -20,6 +20,30 @@ const getAllExams = async (req, res) => {
     });
   } catch (error) {
     console.error('Get all exams error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error getting exams'
+    });
+  }
+};
+
+// @desc    Get all exams including inactive (Admin only)
+// @route   GET /api/exams/admin/all
+// @access  Private/Admin
+const getAllExamsAdmin = async (req, res) => {
+  try {
+    const exams = await Exam.find({}) // Get all exams regardless of status
+      .populate('createdBy', 'name email')
+      .select('-__v')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: exams.length,
+      data: { exams }
+    });
+  } catch (error) {
+    console.error('Get all exams (admin) error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error getting exams'
@@ -350,6 +374,7 @@ const deleteExam = async (req, res) => {
 
 module.exports = {
   getAllExams,
+  getAllExamsAdmin,
   getExamById,
   getExamQuestions,
   createExam,

@@ -68,13 +68,16 @@ const submitExam = async (req, res) => {
 
     // Process each question
     for (const question of questions) {
+      // Find user's answer for this question
       const userAnswer = answers.find(ans => ans.questionId === question._id.toString());
       const selectedOption = userAnswer ? userAnswer.selectedOption : null;
       
-      const isCorrect = selectedOption === question.correctOption;
-      const marks = isCorrect ? question.marks : 0;
+      // FIXED: Ensure proper comparison
+      const isCorrect = selectedOption && selectedOption.toString() === question.correctOption.toString();
+      const marks = isCorrect ? (question.marks || 1) : 0;
 
-      if (selectedOption === null) {
+      // Count stats
+      if (!selectedOption) {
         unanswered++;
       } else if (isCorrect) {
         correctAnswers++;
@@ -83,16 +86,16 @@ const submitExam = async (req, res) => {
         wrongAnswers++;
       }
 
-      totalMarks += question.marks;
+      totalMarks += (question.marks || 1);
 
-      // Create answer record
+      // Create answer record with proper data
       answerRecords.push({
         questionId: question._id,
-        selectedOption,
+        selectedOption: selectedOption || null,
         correctOption: question.correctOption,
         isCorrect,
         marks,
-        timeSpent: userAnswer ? userAnswer.timeSpent : 0
+        timeSpent: userAnswer ? (userAnswer.timeSpent || 0) : 0
       });
     }
 
@@ -138,7 +141,7 @@ const submitExam = async (req, res) => {
         path: 'answers',
         populate: {
           path: 'questionId',
-          select: 'questionText options questionNumber'
+          select: 'questionText options correctOption questionNumber marks explanation'
         }
       });
 
@@ -170,30 +173,6 @@ const submitExam = async (req, res) => {
   }
 };
 
-// @desc    Get user's exam results
-// @route   GET /api/results/my-results
-// @access  Private
-const getMyResults = async (req, res) => {
-  try {
-    const results = await Result.find({ userId: req.user.id })
-      .populate('examId', 'title description duration totalQuestions passingScore')
-      .select('-__v')
-      .sort({ createdAt: -1 });
-
-    res.json({
-      success: true,
-      count: results.length,
-      data: { results }
-    });
-  } catch (error) {
-    console.error('Get my results error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error getting results'
-    });
-  }
-};
-
 // @desc    Get specific result by ID
 // @route   GET /api/results/:id
 // @access  Private
@@ -215,7 +194,7 @@ const getResultById = async (req, res) => {
         path: 'answers',
         populate: {
           path: 'questionId',
-          select: 'questionText options questionNumber'
+          select: 'questionText options correctOption questionNumber marks explanation'
         }
       });
 
@@ -247,6 +226,30 @@ const getResultById = async (req, res) => {
   }
 };
 
+// @desc    Get user's exam results
+// @route   GET /api/results/my-results
+// @access  Private
+const getMyResults = async (req, res) => {
+  try {
+    const results = await Result.find({ userId: req.user.id })
+      .populate('examId', 'title description duration totalQuestions passingScore')
+      .select('-__v')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: results.length,
+      data: { results }
+    });
+  } catch (error) {
+    console.error('Get my results error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error getting results'
+    });
+  }
+};
+
 // @desc    Get all results (Admin only)
 // @route   GET /api/results
 // @access  Private/Admin
@@ -262,16 +265,6 @@ const getAllResults = async (req, res) => {
     if (userId && mongoose.Types.ObjectId.isValid(userId)) {
       filter.userId = userId;
     }
-
-    const options = {
-      page: parseInt(page),
-      limit: parseInt(limit),
-      sort: { createdAt: -1 },
-      populate: [
-        { path: 'userId', select: 'name email' },
-        { path: 'examId', select: 'title description' }
-      ]
-    };
 
     const results = await Result.find(filter)
       .populate('userId', 'name email')

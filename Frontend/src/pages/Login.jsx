@@ -1,57 +1,63 @@
-import React, { useState } from 'react';
-import { authAPI } from '../services/api';
-import LoadingSpinner from '../components/LoadingSpinner';
-import ErrorMessage from '../components/ErrorMessage';
-import SuccessMessage from '../components/SuccessMessage';
-import { FaUser, FaEnvelope, FaLock, FaUserPlus, FaSignInAlt } from 'react-icons/fa';
+import React, { useState } from "react";
+import { authAPI } from "../services/api";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
+import SuccessMessage from "../components/SuccessMessage";
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaUserPlus,
+  FaSignInAlt,
+} from "react-icons/fa";
 
 const Login = ({ setUser }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       if (isLogin) {
         // Login logic
         const response = await authAPI.login({
           email: formData.email,
-          password: formData.password
+          password: formData.password,
         });
 
         if (response.data.success) {
           const { user, token } = response.data.data;
-          localStorage.setItem('token', token);
+          localStorage.setItem("token", token);
           setUser({ ...user, token });
-          setSuccess('Login successful! Redirecting...');
+          setSuccess("Login successful! Redirecting...");
         } else {
-          setError(response.data.message || 'Login failed');
+          setError(response.data.message || "Login failed");
         }
       } else {
         // Register logic
         if (formData.password !== formData.confirmPassword) {
-          setError('Passwords do not match');
+          setError("Passwords do not match");
           setLoading(false);
           return;
         }
@@ -59,20 +65,23 @@ const Login = ({ setUser }) => {
         const response = await authAPI.register({
           name: formData.name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
         });
 
         if (response.data.success) {
           const { user, token } = response.data.data;
-          localStorage.setItem('token', token);
+          localStorage.setItem("token", token);
           setUser({ ...user, token });
-          setSuccess('Registration successful! Welcome to MCQ System!');
+          setSuccess("Registration successful! Welcome to MCQ System!");
         } else {
-          setError(response.data.message || 'Registration failed');
+          setError(response.data.message || "Registration failed");
         }
       }
     } catch (error) {
-      setError(error.response?.data?.message || `${isLogin ? 'Login' : 'Registration'} failed`);
+      setError(
+        error.response?.data?.message ||
+          `${isLogin ? "Login" : "Registration"} failed`
+      );
     } finally {
       setLoading(false);
     }
@@ -81,20 +90,25 @@ const Login = ({ setUser }) => {
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setFormData({
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     });
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
   };
 
-  if (loading) return <LoadingSpinner message={`${isLogin ? 'Signing in' : 'Creating account'}...`} />;
+  if (loading)
+    return (
+      <LoadingSpinner
+        message={`${isLogin ? "Signing in" : "Creating account"}...`}
+      />
+    );
 
   if (success) {
     return (
-      <SuccessMessage 
+      <SuccessMessage
         message={success}
         onContinue={() => window.location.reload()}
         buttonText="Continue"
@@ -111,7 +125,7 @@ const Login = ({ setUser }) => {
             <span className="text-white font-bold text-lg">MCQ</span>
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            {isLogin ? 'Sign in to your account' : 'Create your account'}
+            {isLogin ? "Sign in to your account" : "Create your account"}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
@@ -119,7 +133,7 @@ const Login = ({ setUser }) => {
               onClick={toggleMode}
               className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
             >
-              {isLogin ? 'Sign up here' : 'Sign in here'}
+              {isLogin ? "Sign up here" : "Sign in here"}
             </button>
           </p>
         </div>
@@ -133,8 +147,8 @@ const Login = ({ setUser }) => {
                   Full Name
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaUser className="h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <FaUser className="h-4 w-4 text-gray-400" />
                   </div>
                   <input
                     id="name"
@@ -143,7 +157,7 @@ const Login = ({ setUser }) => {
                     required={!isLogin}
                     value={formData.name}
                     onChange={handleChange}
-                    className="input pl-10"
+                    className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
                     placeholder="Full Name"
                   />
                 </div>
@@ -155,8 +169,8 @@ const Login = ({ setUser }) => {
                 Email address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaEnvelope className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <FaEnvelope className="h-4 w-4 text-gray-400" />
                 </div>
                 <input
                   id="email"
@@ -166,7 +180,7 @@ const Login = ({ setUser }) => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="input pl-10"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
                   placeholder="Email address"
                 />
               </div>
@@ -177,8 +191,8 @@ const Login = ({ setUser }) => {
                 Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaLock className="h-5 w-5 text-gray-400" />
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                  <FaLock className="h-4 w-4 text-gray-400" />
                 </div>
                 <input
                   id="password"
@@ -188,7 +202,7 @@ const Login = ({ setUser }) => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="input pl-10"
+                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
                   placeholder="Password"
                 />
               </div>
@@ -200,8 +214,8 @@ const Login = ({ setUser }) => {
                   Confirm Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaLock className="h-5 w-5 text-gray-400" />
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                    <FaLock className="h-4 w-4 text-gray-400" />
                   </div>
                   <input
                     id="confirmPassword"
@@ -211,7 +225,7 @@ const Login = ({ setUser }) => {
                     required={!isLogin}
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="input pl-10"
+                    className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
                     placeholder="Confirm Password"
                   />
                 </div>
@@ -219,35 +233,49 @@ const Login = ({ setUser }) => {
             )}
           </div>
 
-          {error && (
-            <ErrorMessage message={error} type="error" />
-          )}
+          {error && <ErrorMessage message={error} type="error" />}
 
           <div>
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 {isLogin ? (
-                  <FaSignInAlt className="h-5 w-5 text-blue-500 group-hover:text-blue-400" />
+                  <FaSignInAlt className="h-4 w-4 text-blue-300 group-hover:text-blue-200" />
                 ) : (
-                  <FaUserPlus className="h-5 w-5 text-blue-500 group-hover:text-blue-400" />
+                  <FaUserPlus className="h-4 w-4 text-blue-300 group-hover:text-blue-200" />
                 )}
               </span>
-              {isLogin ? 'Sign in' : 'Sign up'}
+              {isLogin ? "Sign in" : "Sign up"}
             </button>
           </div>
 
           {/* Demo Credentials */}
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <h4 className="text-sm font-medium text-blue-800 mb-2">Demo Credentials:</h4>
-            <div className="text-xs text-blue-600 space-y-1">
-              <div><strong>Student:</strong> john@student.com / student123</div>
-              <div><strong>Admin:</strong> admin@mcqsystem.com / admin123</div>
+          {/* <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <h4 className="text-sm font-medium text-blue-800 mb-2">
+              🚀 Demo Credentials:
+            </h4>
+            <div className="text-xs text-blue-700 space-y-1">
+              <div className="flex justify-between items-center p-2 bg-white rounded border">
+                <span>
+                  <strong>Student:</strong> john@student.com
+                </span>
+                <span className="text-gray-500">student123</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-white rounded border">
+                <span>
+                  <strong>Admin:</strong> admin@mcqsystem.com
+                </span>
+                <span className="text-gray-500">admin123</span>
+              </div>
             </div>
-          </div>
+            <p className="text-xs text-blue-600 mt-2">
+              💡 Use these credentials to test the system without creating an
+              account
+            </p>
+          </div> */}
         </form>
       </div>
     </div>
