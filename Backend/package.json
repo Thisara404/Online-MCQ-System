@@ -4,9 +4,13 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "seed": "node seedData.js",
+    "test": "node testAPI.js",
+    "setup-test": "node setup-and-test.js"
   },
   "devDependencies": {
+    "axios": "^1.11.0",
     "nodemon": "^3.1.10"
   },
   "dependencies": {
