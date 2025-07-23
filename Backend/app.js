@@ -10,6 +10,11 @@ const Question = require('./models/Question');
 const Result = require('./models/Result');
 const Answer = require('./models/Answer');
 
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const examRoutes = require('./routes/examRoutes');
+const resultRoutes = require('./routes/resultRoutes');
+
 const app = express();
 
 // Connect to MongoDB
@@ -23,6 +28,11 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/exams', examRoutes);
+app.use('/api/results', resultRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -55,15 +65,6 @@ app.get('/api/test-models', async (req, res) => {
       error: error.message
     });
   }
-});
-
-// Basic test routes (temporary)
-app.get('/api/exams', (req, res) => {
-  res.json({ message: 'Exams route working!' });
-});
-
-app.get('/api/results', (req, res) => {
-  res.json({ message: 'Results route working!' });
 });
 
 // Error handling middleware
